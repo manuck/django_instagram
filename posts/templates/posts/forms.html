@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load crispy_forms_tags %}
+    <form method = "POST", enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit"  class="btn btn-success">등록</button>
+    </form>
+{% endblock %}

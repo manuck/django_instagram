@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h3>{{ post.content }}</h3>
+    <a href="{% url 'posts:update' post.pk %}">수정</a>
+    <form action="{% url 'posts:delete' post.pk %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="삭제">
+    </form>
+{% endblock %}
