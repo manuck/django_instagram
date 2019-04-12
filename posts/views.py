@@ -10,7 +10,7 @@ def list(request):
 def new(request):
     post = Post()
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save()
             return redirect('posts:list')
@@ -21,6 +21,7 @@ def new(request):
     
 def detail(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
+    print(post.image)
     return render(request, 'posts/detail.html', {'post': post})
     
 def delete(request, post_pk):

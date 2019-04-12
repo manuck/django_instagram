@@ -6,5 +6,5 @@ from crispy_forms.layout import Submit
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('content','image')
+        fields = ('content', 'image')
         
