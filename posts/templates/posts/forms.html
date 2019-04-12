@@ -3,7 +3,10 @@
 {% load crispy_forms_tags %}
     <form method = "POST" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form|crispy }}
+        {{ post_form|crispy }}
+        {% if image_form %}
+            {{ image_form|crispy }}
+        {% endif %}
         <button type="submit"  class="btn btn-success">등록</button>
     </form>
 {% endblock %}

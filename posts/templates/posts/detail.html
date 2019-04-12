@@ -1,10 +1,29 @@
 {% extends 'base.html' %}
 {% block body %}
-    <h3>{{ post.content }}</h3>
-    <img src="{{ post.image.url }}">
-    <a href="{% url 'posts:update' post.pk %}">수정</a>
-    <form action="{% url 'posts:delete' post.pk %}" method="POST">
+    <h3 style="display:inline">{{ post.content }}</h3>
+        <form action="{% url 'posts:delete' post.pk %}" method="POST" onsubmit="return confirm('삭제하시겠습니까?')" style="display:inline" class="float-right">
         {% csrf_token %}
-        <input type="submit" value="삭제">
-    </form>
+        <input type="image" id="image" alt="..." src="/media/delete.png">
+    </form>    
+    <a href="{% url 'posts:update' post.pk %}" class="float-right"><input type="image" id="image" alt="..." src="/media/edit.png"></a>
+    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+          <div class="carousel-inner">
+            {% for image in post.image_set.all %}
+            <div class="carousel-item {% if forloop.counter == 1 %} active {% endif %}">
+              <img src="{{ image.file.url }}" class="d-block mx-auto" alt="{{ image.file }}" height="600px">
+            </div>
+            {% endfor %}
+          </div>
+          <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+
+    
 {% endblock %}
+

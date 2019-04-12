@@ -1,7 +1,24 @@
 {% extends 'base.html' %}
+{% block style %}
+    <style>
+    p{
+        font-family: 'Courgette', cursive;
+    }
+    </style>
+{% endblock %}
 {% block body %}
+    <div class="container">
+        <div class="row">
     {% for post in posts %}
-        <p>{{ post.id }}번글: <a href="{% url 'posts:detail' post.pk %}">{{ post.content }}</a></p>
+    <div class="col-sm-12 col-md-4 col-lg-3">
+        <div class="card">
+          <a href="{% url 'posts:detail' post.pk %}" ><img src="{{ post.image_set.first.file.url }}" class="rounded mx-auto d-block card-img-top img-fluid" alt="post-{{post.pk}}-image-1"></a>
+          <div class="card-body">
+            <p class="card-text">{{ post.content }}</p>
+          </div>
+        </div>
+    </div>
     {% endfor %}
-    <a href="{% url 'posts:new' %}">게시글 등록</a>
+        </div>
+    </div>
 {% endblock %}
