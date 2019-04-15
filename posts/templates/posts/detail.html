@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 {% block body %}
     <h3 style="display:inline">{{ post.content }}</h3>
+    {% if post.user == user %}
         <form action="{% url 'posts:delete' post.pk %}" method="POST" onsubmit="return confirm('삭제하시겠습니까?')" style="display:inline" class="float-right">
         {% csrf_token %}
         <input type="image" id="image" alt="..." src="/media/delete.png">
     </form>    
     <a href="{% url 'posts:update' post.pk %}" class="float-right"><input type="image" id="image" alt="..." src="/media/edit.png"></a>
+    {% endif %}
     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
           <div class="carousel-inner">
             {% for image in post.image_set.all %}

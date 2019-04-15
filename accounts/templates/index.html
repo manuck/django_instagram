@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block style %}
+
+{% endblock %}
+{% block body %}
+    <form method="post" action="{% url 'accounts:signup' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">회원가입</button>
+    </form>
+    {% for user in users %}
+        <p>{{ user.username }}</p>
+    {% endfor %}
+{% endblock %}

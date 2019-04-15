@@ -11,7 +11,9 @@ def new(request):
     if request.method == 'POST':
         post_form = PostForm(request.POST)
         if post_form.is_valid():
-            post = post_form.save()
+            post = post_form.save(commit=False)
+            post.user = request.user
+            post.save()
             files = request.FILES.getlist('file')
             for file in files:
                 request.FILES['file'] = file
@@ -34,21 +36,26 @@ def detail(request, post_pk):
     
 def delete(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
-    if request.method == 'POST':
-        post.delete()
-        return redirect('posts:list')
+    if request.user == post.user:
+        if request.method == 'POST':
+            post.delete()
+            return redirect('posts:list')
+        else:
+            return redirect(post)
     else:
-        return redirect(post)
+        return redirect('posts:list')
         
 def update(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
-    if request.method == 'POST':
-        post_form = PostForm(request.POST, instance=post)
-        if post_form.is_valid():
-            post = post_form.save()
-            return redirect(post)
+    if request.user == post.user:
+        if request.method == 'POST':
+            post_form = PostForm(request.POST, instance=post)
+            if post_form.is_valid():
+                post = post_form.save()
+                return redirect(post)
+        else:
+            post_form = PostForm(instance=post)
+        context = {'post_form': post_form}
+        return render(request, 'posts/forms.html', context)
     else:
-        post_form = PostForm(instance=post)
-    context = {'post_form': post_form}
-    return render(request, 'posts/forms.html', context)
-    
+        return redirect('posts:list')
