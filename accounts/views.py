@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout as django_logout, login as django_login
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def index(request):
@@ -57,8 +58,26 @@ def signin(request):
     }
     return render(request, 'login.html', context)
     
-
+@login_required
 def logout(request):
     django_logout(request)
     return redirect('posts:list')
+
+@login_required
+def delete(request):
+    request.user.delete()
+    return redirect('posts:list')
+
+@login_required
+def update(request):
+    # user_form = UserChangeForm()
+    if request.method == 'POST':
+        user_form = UserChangeForm(request.POST, instance=request.user)
+        if user_form.is_valid():
+            user_form.save()
+            return redirect('boards:index')
+    else:
+        user_form = UserChangeForm()
+    context = {'user_form':user_form}
+    return render(request, 'update.html', context)
 

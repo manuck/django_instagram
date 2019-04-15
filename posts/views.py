@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post
 from .forms import PostForm,ImageForm
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def list(request):
     posts = Post.objects.all()
     return render(request, 'posts/list.html', {'posts': posts})
     
+@login_required
 def new(request):
     if request.method == 'POST':
         post_form = PostForm(request.POST)
