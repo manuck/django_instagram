@@ -8,6 +8,7 @@
     </form>    
     <a href="{% url 'posts:update' post.pk %}" class="float-right"><input type="image" id="image" alt="..." src="/media/edit.png"></a>
     {% endif %}
+    
     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
           <div class="carousel-inner">
             {% for image in post.image_set.all %}
@@ -25,7 +26,12 @@
             <span class="sr-only">Next</span>
           </a>
         </div>
-
+    {% if user in post.like_users.all %}
+      <a href="{% url 'posts:like' post.pk %}"><i class="fas fa-heart fa-2x" style="color:lightcoral;"></i></a>
+    {% else %}
+      <a href="{% url 'posts:like' post.pk %}"><i class="far fa-heart fa-2x" style="color:lightcoral;"></i></a>
+    {% endif %}
+    <span>{{ post.like_users.count}}명이 좋아요를 눌렀습니다.</span>
     
 {% endblock %}
 

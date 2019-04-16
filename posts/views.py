@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post
 from .forms import PostForm,ImageForm
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -61,3 +62,19 @@ def update(request, post_pk):
         return render(request, 'posts/forms.html', context)
     else:
         return redirect('posts:list')
+    
+
+def like(request, post_pk):
+    post = get_object_or_404(Post, pk=post_pk)
+    user = request.user
+    # user가 지금 해당 게시글에 좋아요를 한적이 있는지?
+    # if user in post.like_users.all():
+    #     post.like_users.remove(user)
+    # else:
+    #     post.like_users.add(user)
+    if post.like_users.filter(pk=user.id).exists():
+        post.like_users.remove(user)
+    else:
+        post.like_users.add(user)
+        
+    return redirect('posts:detail', post_pk)
