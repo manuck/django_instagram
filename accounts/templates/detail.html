@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <p>{{ user_info.username }}</p>
+    <p>팔로잉 : {{ user_info.followings.all.count }}</p>
+    <p>팔로워 : {{ user_info.followers.all.count }}</p>
+    {% if user != user_info %}
+        {% if user in user_info.followers.all %}
+            <a href="{% url 'accounts:follow' user_info.pk %}">언팔!</a>
+        {% else %}
+            <a href="{% url 'accounts:follow' user_info.pk %}">팔로우!</a>
+        {% endif %}
+    {% endif %}
+{% endblock %}

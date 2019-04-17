@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post
+from .models import Post, Comment
 from .forms import PostForm,ImageForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 # Create your views here.
+@login_required
 def list(request):
-    posts = Post.objects.all()
+    posts = Post.objects.filter(
+                        Q(user__in=request.user.followings.all())
+                        | Q(user = request.user.id)
+                        ).order_by('-pk')
     return render(request, 'posts/list.html', {'posts': posts})
     
 @login_required
@@ -35,7 +40,8 @@ def new(request):
     
 def detail(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
-    return render(request, 'posts/detail.html', {'post': post})
+    comments = post.comment_set.all()
+    return render(request, 'posts/detail.html', {'post': post, 'comments':comments})
     
 def delete(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
@@ -77,4 +83,24 @@ def like(request, post_pk):
     else:
         post.like_users.add(user)
         
+    return redirect('posts:detail', post_pk)
+
+def comments_create(request, post_pk):
+    if request.method == 'POST':
+        print('갓냐')
+        post = Post.objects.get(pk=post_pk)
+        comment = Comment()
+        comment.content = request.POST.get('content')
+        comment.post = post
+        comment.user = request.user
+        comment.save()
+        comments = post.comment_set.all()
+        print(comments)
+        return redirect('posts:detail', post.pk, {'comments':comments})
+
+def comments_delete(request, post_pk, comment_pk):
+    if request.method == 'POST':
+        comment = Comment.objects.get(pk=comment_pk)
+        comment.delete()
+    
     return redirect('posts:detail', post_pk)

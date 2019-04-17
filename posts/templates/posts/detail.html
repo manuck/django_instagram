@@ -33,5 +33,25 @@
     {% endif %}
     <span>{{ post.like_users.count}}명이 좋아요를 눌렀습니다.</span>
     
+    <p>댓글 작성 {{comments.count}}</p>
+    <form action="{% url 'posts:comments_create' post.pk %}" method="POST">
+      {% csrf_token %}
+      <input type="text" name="content">
+      <input type="submit">
+    </form>
+    {% for comment in comments %}
+      <br>
+      <li style="display: inline">{{ comment.content }}</li>
+      <form action="{% url 'posts:comments_delete' post.pk comment.pk %}" method="POST" style="display: inline" onsubmit="return confirm('삭제하시겠습니까?')">
+      {% csrf_token %}
+      {% if comment.user == user %}
+      <input type="submit" value="삭제">
+      {% endif %}
+      </form>
+    {% empty %}
+    <b><p>댓글이 없습니다.</p></b>
+
+    {% endfor %}
+    
 {% endblock %}
 
