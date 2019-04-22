@@ -12,4 +12,5 @@ urlpatterns = [
     path('like/<int:post_pk>/', views.like, name='like'),
     path('<int:post_pk>/comments/', views.comments_create, name='comments_create'),
     path('<int:post_pk>/comments/<int:comment_pk>/delete/', views.comments_delete, name="comments_delete"),
+    path('hashtags/<int:hashtag_pk>/', views.hashtag, name='hashtag'),
 ]

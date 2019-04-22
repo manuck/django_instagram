@@ -3,6 +3,7 @@
 
 {% endblock %}
 {% block body %}
+{% load socialaccount %}
  <div class="login">
 	<form action="" method="post">
 		{% csrf_token %}
@@ -26,4 +27,5 @@
 		<button class="btn btn-primary btn-block">로그인</button>
 	</form>
 </div>
+<a href="{% provider_login_url 'kakao' method='oauth2' %}">카카오 로그인</a>
 {% endblock %}

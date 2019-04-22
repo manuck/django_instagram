@@ -3,11 +3,14 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import get_user_model
 # Create your models here.
+class Hashtag(models.Model):
+    content = models.TextField(unique=True)
+
 class Post(models.Model):
     content = models.TextField()
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_posts')
-    
+    hashtags = models.ManyToManyField(Hashtag, blank=True, related_name='posts')
     # image = models.ImageField()
     @property
     def like_count(self):

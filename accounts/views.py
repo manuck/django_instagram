@@ -7,9 +7,9 @@ from .models import Profile
 from .forms import ProfileForm, UserCustomCreationForm, UserCustomChangeForm
 # Create your views here.
 
-def index(request):
-    users = User.objects.all()
-    return render(request, 'index.html', {'users':users})
+# def index(request):
+#     users = User.objects.all()
+#     return render(request, 'index.html', {'users':users})
     
 def signup(request):
     # form = UserCustomCreationForm()
@@ -85,6 +85,10 @@ def update(request):
     return render(request, 'update.html', context)
 
 def profile_update(request):
+    try :
+        request.user.profile
+    except :
+        Profile.objects.create(user=request.user)
     if request.method == 'POST':
         profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if profile_form.is_valid():

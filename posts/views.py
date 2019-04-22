@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Comment
+from .models import Post, Comment, Hashtag
 from .forms import PostForm,ImageForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -30,6 +30,18 @@ def new(request):
                     image = image_form.save(commit=False)
                     image.post = post
                     image.save()
+            # 1. 공백 단위로 쪼개서 반복문을 돌리면
+            for word in post.content.split():
+            # 1-1. #이 가장 앞에 있으면,
+                if word.startswith('#'):
+                # if word[0] == '#':
+            # 1-1-1. 해시태그에 저장이 되어 있으면,
+            # 1-1-2. 저장이 안되어 있으면, 만들어서 추가
+                    hashtag, is_created = Hashtag.objects.get_or_create(content=word)
+                    post.hashtags.add(hashtag)
+                    # 만들어지면 : (hashtag object, True)
+                    # 가져와지면 : (hashtag object, False)
+            
             return redirect(post)
             # return redirect('posts:detail', post.pk)
     else:        
@@ -54,20 +66,23 @@ def delete(request, post_pk):
     else:
         return redirect('posts:list')
         
+@login_required
 def update(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
-    if request.user == post.user:
-        if request.method == 'POST':
-            post_form = PostForm(request.POST, instance=post)
-            if post_form.is_valid():
-                post = post_form.save()
-                return redirect(post)
-        else:
-            post_form = PostForm(instance=post)
-        context = {'post_form': post_form}
-        return render(request, 'posts/forms.html', context)
-    else:
-        return redirect('posts:list')
+    if request.method == 'POST':
+        post_form = PostForm(request.POST, instance=post)
+        if post_form.is_valid():
+            post = post_form.save()
+            post.hashtags.clear()
+            for word in post.content.split():
+                if word.startswith('#'):
+                    hashtag, is_created = Hashtag.objects.get_or_create(content=word)
+                    post.hashtags.add(hashtag)
+            return redirect(post)
+    else:        
+        post_form = PostForm(instance=post)
+    context = {'post_form': post_form}
+    return render(request, 'posts/forms.html', context)
     
 
 def like(request, post_pk):
@@ -104,3 +119,14 @@ def comments_delete(request, post_pk, comment_pk):
         comment.delete()
     
     return redirect('posts:detail', post_pk)
+
+def hashtag(request, hashtag_pk):
+    # 해시태그 해당하는 pk 가져와서,
+    hashtag = Hashtag.objects.get(pk=hashtag_pk)
+    print(hashtag)
+    print('asd')
+    # 템플릿에서 출력 : 해당 해시태그가 있는 글들 - 제목만
+    posts = hashtag.posts.all()
+    print(posts)
+    context = {'posts':posts, 'hashtag':hashtag}
+    return render(request, 'posts/hashtag.html', context)

@@ -33,6 +33,9 @@
     {% endif %}
     <span>{{ post.like_users.count}}명이 좋아요를 눌렀습니다.</span>
     
+    {% load hashtag_link %}
+    <p class="card-text card-content">{{ post|hashtag_link|safe }}</p>
+    
     <p>댓글 작성 {{comments.count}}</p>
     <form action="{% url 'posts:comments_create' post.pk %}" method="POST">
       {% csrf_token %}
