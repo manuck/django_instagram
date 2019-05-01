@@ -4,7 +4,7 @@ from .forms import PostForm,ImageForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-
+from django.http import JsonResponse
 # Create your views here.
 @login_required
 def list(request):
@@ -95,10 +95,11 @@ def like(request, post_pk):
     #     post.like_users.add(user)
     if post.like_users.filter(pk=user.id).exists():
         post.like_users.remove(user)
+        is_like = False
     else:
         post.like_users.add(user)
-        
-    return redirect('posts:detail', post_pk)
+        is_like = True
+    return JsonResponse({'is_like': is_like, 'count': post.like_users.count()})
 
 def comments_create(request, post_pk):
     if request.method == 'POST':
@@ -123,10 +124,7 @@ def comments_delete(request, post_pk, comment_pk):
 def hashtag(request, hashtag_pk):
     # 해시태그 해당하는 pk 가져와서,
     hashtag = Hashtag.objects.get(pk=hashtag_pk)
-    print(hashtag)
-    print('asd')
     # 템플릿에서 출력 : 해당 해시태그가 있는 글들 - 제목만
     posts = hashtag.posts.all()
-    print(posts)
     context = {'posts':posts, 'hashtag':hashtag}
     return render(request, 'posts/hashtag.html', context)

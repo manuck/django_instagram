@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout as django_logout, login as django_login, get_user_model
+from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -7,9 +10,9 @@ from .models import Profile
 from .forms import ProfileForm, UserCustomCreationForm, UserCustomChangeForm
 # Create your views here.
 
-# def index(request):
-#     users = User.objects.all()
-#     return render(request, 'index.html', {'users':users})
+def index(request):
+    users = get_user_model().objects.all()
+    return render(request, 'index.html', {'users':users})
     
 def signup(request):
     # form = UserCustomCreationForm()
@@ -18,7 +21,8 @@ def signup(request):
         form = UserCustomCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            Profile.objects.create(user=user)
+            # Profile.objects.create(user=user)
+            auth_login(request, user)
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
@@ -116,3 +120,15 @@ def follow(request, user_pk):
     else:
         user.followers.add(request.user)
     return redirect('accounts:detail', user_pk)
+
+# def search(request):
+#     # 1. 내가 만들어놓은 모델 -> DB
+#     # 2. variable routing (X)
+#     # 3. form (O)
+#     username = request.GET.get('username')
+#     User = get_user_model()
+#     user = User.objects.filter(username=username).first()
+#     if not user:
+#         messages.warning(request, f'{username}을 찾을 수 없습니다.')
+#         return redirect('posts:list')
+#     return redirect('accounts:detail', user.pk)

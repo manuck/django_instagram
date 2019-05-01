@@ -26,12 +26,9 @@
             <span class="sr-only">Next</span>
           </a>
         </div>
-    {% if user in post.like_users.all %}
-      <a href="{% url 'posts:like' post.pk %}"><i class="fas fa-heart fa-2x" style="color:lightcoral;"></i></a>
-    {% else %}
-      <a href="{% url 'posts:like' post.pk %}"><i class="far fa-heart fa-2x" style="color:lightcoral;"></i></a>
-    {% endif %}
-    <span>{{ post.like_users.count}}명이 좋아요를 눌렀습니다.</span>
+    
+    <i data-id="{{post.pk}}" class=" {% if user in post.like_users.all %} fas {% else %} far {% endif %} fa-heart fa-2x like-button" style="color:lightcoral;"></i>
+    <span><span id="like-count-{{post.pk}}">{{ post.like_users.count }}</span>명이 좋아요를 눌렀습니다.</span>
     
     {% load hashtag_link %}
     <p class="card-text card-content">{{ post|hashtag_link|safe }}</p>
@@ -55,6 +52,27 @@
     <b><p>댓글이 없습니다.</p></b>
 
     {% endfor %}
-    
 {% endblock %}
+
+{% block script %}
+<script>
+  const likeButton = document.querySelector('.like-button')  
+  likeButton.addEventListener('click', function(e){
+      const postId = e.target.dataset.id
+      axios.get(`/posts/like/${postId}/`)
+        .then(function(response){
+          console.log(response)
+          const likeCount = document.querySelector(`#like-count-${postId}`)
+          likeCount.innerText = response.data.count
+          if (response.data.is_like) {
+            e.target.classList.remove('far')
+            e.target.classList.add('fas')
+          } else {
+            e.target.classList.remove('fas')
+            e.target.classList.add('far')
+          }
+        })
+    })
+</script>
+{% endblock %}   
 

@@ -3,12 +3,8 @@
 
 {% endblock %}
 {% block body %}
-    <form method="post" action="{% url 'accounts:signup' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">회원가입</button>
-    </form>
+    <h1>사용자 목록</h1>
     {% for user in users %}
-        <p>{{ user.username }}</p>
+        <a href="{% url 'accounts:detail' user.pk %}">{{ user.username }}</a><br>
     {% endfor %}
 {% endblock %}

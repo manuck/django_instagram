@@ -6,9 +6,9 @@
     <p>팔로워 : {{ user_info.followers.all.count }}</p>
     {% if user != user_info %}
         {% if user in user_info.followers.all %}
-            <a href="{% url 'accounts:follow' user_info.pk %}">언팔!</a>
+            <a href="{% url 'accounts:follow' user_info.pk %}"><input type="image" id="image" alt="..." src="/media/언팔.png"></a>
         {% else %}
-            <a href="{% url 'accounts:follow' user_info.pk %}">팔로우!</a>
+            <a href="{% url 'accounts:follow' user_info.pk %}"><input type="image" id="image" alt="..." src="/media/팔로우.png"></a>
         {% endif %}
     {% endif %}
 {% endblock %}
